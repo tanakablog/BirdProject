@@ -1,1 +1,4 @@
 Library
+*.csproj
+BirdProject.sln
+BirdProject.userprefs

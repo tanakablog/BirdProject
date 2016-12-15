@@ -1,0 +1,29 @@
+@startuml
+title アセットバンドル管理
+
+'アセットバンドル管理'
+class AssetBundleManager {
+
+}
+
+interface IAssetBundleLoder {
+  +LoadAssetBundle : AssetBundle
+
+}
+
+class CacheOrDownloader  {
+  +LoadAssetBundle : AssetBundle
+
+}
+
+class WWWDonwLoader {
+  +LoadAssetBundle : AssetBundle
+}
+
+
+AssetBundleManager -down-> IAssetBundleLoder
+
+CacheOrDownloader .up.> IAssetBundleLoder
+WWWDonwLoader .up.> IAssetBundleLoder
+
+@enduml

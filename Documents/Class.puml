@@ -8,22 +8,23 @@ class AssetBundleManager {
 
 interface IAssetBundleLoder {
   +LoadAssetBundle : AssetBundle
-
 }
 
-class CacheOrDownloader  {
-  +LoadAssetBundle : AssetBundle
-
-}
-
-class WWWDonwLoader {
+class WWWLoader {
   +LoadAssetBundle : AssetBundle
 }
 
+class WWWCacheOrDownloadLoader  {
+  +LoadAssetBundle : AssetBundle
+}
+
+class LocalAssetBundleLoader {
+  +LoadAssetBundle : AssetBundle
+}
 
 AssetBundleManager -down-> IAssetBundleLoder
 
-CacheOrDownloader .up.> IAssetBundleLoder
-WWWDonwLoader .up.> IAssetBundleLoder
-
+WWWLoader .up.> IAssetBundleLoder
+WWWCacheOrDownloadLoader .up.> IAssetBundleLoder
+LocalAssetBundleLoader .up.> IAssetBundleLoder
 @enduml

@@ -13,7 +13,7 @@ class AssetBundleManager {
 }
 
 interface IAssetBundleManifest {
-  void SetManifest<T>(T manifest);
+  void SetManifest<T>(T manifest)
   List<string> GetDependenciesNames(string asset_bundle_name)
   Hash128 GetAssetBundleHash(string asset_bundle_name)
 }
@@ -76,6 +76,7 @@ end note
 AssetBundleManager -right-> IAssetBundleManifest
 AssetBundleManager -down-> AssetBundleLoadOperator
 AssetBundleManager -left-> AssetLoader
+
 
 IAssetBundleManifest <|-- UnityManifest
 

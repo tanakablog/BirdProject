@@ -19,32 +19,38 @@ public class PlantUMLConverter {
     };
 
     /// <summary>
-    /// 矢印パターン
+    /// 継承矢印パターン
     /// </summary>
-    private const string arrowPattern = @"-*->";
+    private const string arrowPattern = @"(?:-{1,}{dir}\|>|<\|{dir}-{1,})";
+
+    /// <summary>
+    /// 方向パターン
+    /// </summary>
+    private const string dirPattern = @"(?:|right|left|up|down|r|l|u|d)";
 
     /// <summary>
     /// クラス情報リスト
     /// </summary>
     private List<ClassInfo> classInfoList;
 
+    /// <summary>
+    /// インターフェース情報リスト
+    /// </summary>
+    private List<InterfaceInfo> interfaceInfoList;
+
     [MenuItem("Test/Convert")]
     public static void Convert () {
         PlantUMLConverter converter = new PlantUMLConverter ();
 
-        converter.ConvertProcess ("AssetBundleManager-->AssetLoader");
+        converter.ConvertProcess ("AssetBundleManager--|>AssetLoader");
     }
 
+    /// <summary>
+    /// 変換処理
+    /// </summary>
+    /// <param name="text">Text.</param>
     public void ConvertProcess(string text)
     {
-        Regex regex = new Regex (arrowPattern);
-
-        foreach (var split in regex.Split (text)) {
-            Debug.LogWarning (split);
-        }
-
-        return;
-
         classInfoList = new List<ClassInfo> ();
         
         // １行毎に分割
@@ -58,7 +64,14 @@ public class PlantUMLConverter {
             }
 
             // インターフェースパース処理
+            if (lines [i].IndexOf("interface") >= 0 ) {
+                i = ParseClass (lines, i);
+                continue;
+            }
         }
+
+        string arrow = arrowPattern.Replace ("{dir}", dirPattern);
+        Regex regex = new Regex (arrow);
     }
 
     /// <summary>
@@ -69,19 +82,20 @@ public class PlantUMLConverter {
     /// <param name="index">アクセスインデックス</param>
     private int ParseClass( string[] lines, int index)
     {
+        // 情報クラス初期化
         var info = new ClassInfo ();
         info.menberList = new List<MenberInfo> ();
-        info.name = "public " + lines [index].Replace ("{", string.Empty);
+        info.name = lines [index].Replace ("{", string.Empty);
 
+        // 内容までインデックスをずらす
         index++;
+        if (lines [index].IndexOf ("{") >= 0) {
+            index++;
+        }
 
-        // クラス定義終了までパース処理
+        // 定義終了までパース処理
         while (lines [index].IndexOf ("}") < 0) {
-            if (lines [index].IndexOf ("{") >= 0) {
-                index++;
-                continue;
-            }
-
+            
             var menber = new MenberInfo ();
 
             menber.name = ReplaceAccessModifiers (lines [index]);
@@ -94,6 +108,43 @@ public class PlantUMLConverter {
 
         // クラス定義情報をリストに追加
         classInfoList.Add (info);
+
+        return index++;
+    }
+
+    /// <summary>
+    /// インターフェースパース処理
+    /// </summary>
+    /// <returns>The interface.</returns>
+    /// <param name="lines">Lines.</param>
+    /// <param name="index">Index.</param>
+    private int ParseInterface( string[] lines, int index )
+    {
+        // 情報クラス初期化
+        var info = new InterfaceInfo ();
+        info.menberList = new List<MenberInfo> ();
+        info.name = lines [index].Replace ("{", string.Empty);
+
+        // 内容までインデックスをずらす
+        index++;
+        if (lines [index].IndexOf ("{") >= 0) {
+            index++;
+        }
+
+        // 定義終了までパース処理
+        while (lines [index].IndexOf ("}") < 0) {
+            var menber = new MenberInfo ();
+
+            menber.name = ReplaceAccessModifiers (lines [index]);
+            menber.isAbstract = true;
+
+            info.menberList.Add (menber);
+
+            index++;
+        }
+
+        // インターフェース定義情報をリストに追加
+        interfaceInfoList.Add (info);
 
         return index++;
     }
@@ -112,6 +163,25 @@ public class PlantUMLConverter {
         }
 
         return line;
+    }
+
+    public abstract class StructuralInfoBase {
+        /// <summary>
+        /// キー取得
+        /// </summary>
+        /// <returns>キー名</returns>
+        public abstract string GetKey ();
+
+        /// <summary>
+        /// 構造体名設定
+        /// </summary>
+        public abstract void SetName (string structural);
+
+        /// <summary>
+        /// 宣言する構造体名取得
+        /// </summary>
+        public abstract string GetDeclaresName ();
+
     }
 
     public class ClassInfo {

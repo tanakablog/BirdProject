@@ -4,6 +4,7 @@ using UnityEngine;
 using System.Linq;
 using System.Text.RegularExpressions;
 using UnityEditor;
+using System.Text;
 
 public class PlantUMLConverter {
 
@@ -65,7 +66,7 @@ public class PlantUMLConverter {
 
             // インターフェースパース処理
             if (lines [i].IndexOf("interface") >= 0 ) {
-                i = ParseClass (lines, i);
+                i = ParseInterface (lines, i);
                 continue;
             }
         }
@@ -84,7 +85,8 @@ public class PlantUMLConverter {
     {
         // 情報クラス初期化
         var info = new ClassInfo ();
-        info.menberList = new List<MenberInfo> ();
+        var menber_list = info.GetMenberList ();
+        menber_list = new List<MenberInfo> ();
         info.name = lines [index].Replace ("{", string.Empty);
 
         // 内容までインデックスをずらす
@@ -163,39 +165,5 @@ public class PlantUMLConverter {
         }
 
         return line;
-    }
-
-    public abstract class StructuralInfoBase {
-        /// <summary>
-        /// キー取得
-        /// </summary>
-        /// <returns>キー名</returns>
-        public abstract string GetKey ();
-
-        /// <summary>
-        /// 構造体名設定
-        /// </summary>
-        public abstract void SetName (string structural);
-
-        /// <summary>
-        /// 宣言する構造体名取得
-        /// </summary>
-        public abstract string GetDeclaresName ();
-
-    }
-
-    public class ClassInfo {
-        public string name;
-        public List<MenberInfo> menberList;
-    }
-
-    public class InterfaceInfo {
-        public string name;
-        public List<MenberInfo> menberList;
-    }
-
-    public class MenberInfo {
-        public string name;
-        public bool isAbstract;
     }
 }

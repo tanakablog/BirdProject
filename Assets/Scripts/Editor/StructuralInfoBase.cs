@@ -30,6 +30,15 @@ public abstract class StructuralInfoBase {
     public abstract void SetName (string structural);
 
     /// <summary>
+    /// 構造体名取得
+    /// </summary>
+    /// <returns>The name.</returns>
+    public virtual string GetName()
+    {
+        return strcturalName;
+    }
+
+    /// <summary>
     /// 宣言する構造体名取得
     /// </summary>
     public abstract string GetDeclarationName ();

@@ -43,7 +43,7 @@ public class ClassInfo : StructuralInfoBase {
         while (lines [index].IndexOf ("}") < 0) {
             var menber = new MenberInfo ();
 
-            menber.name = ReplaceAccessModifiers (lines [index]);
+            menber.name = ReplaceAccessModifiers (lines [index]).TrimStart ();
             menber.isAbstract = lines [index].IndexOf ("abstract ") >= 0;
 
             menberList.Add (menber);

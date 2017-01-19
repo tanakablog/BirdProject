@@ -21,15 +21,8 @@ public class PlantUMLConverter {
     private const string dirPattern = @"(?:|right|left|up|down|r|l|u|d)";
 
     /// <summary>
-    /// クラス情報リスト
+    /// 構造体情報リスト
     /// </summary>
-    private List<ClassInfo> classInfoList;
-
-    /// <summary>
-    /// インターフェース情報リスト
-    /// </summary>
-    private List<InterfaceInfo> interfaceInfoList;
-
     private List<StructuralInfoBase> structuralInfoList = new List<StructuralInfoBase>();
 
     [MenuItem("Test/Convert")]
@@ -48,6 +41,29 @@ public class PlantUMLConverter {
         // １行毎に分割
         var lines = text.Replace ("\r\n", "\n").Split ('\n');
 
+        // 構造体パース
+        ParseStructural (lines);
+
+        // 継承矢印パターン
+        string arrow = arrowPattern.Replace ("{dir}", dirPattern);
+        Regex regex = new Regex (arrow);
+
+        for (int i = 0; i < lines.Length; ++i) {
+            if (!regex.IsMatch (lines [i])) {
+                continue;
+            }
+
+            var structurals = regex.Split (lines [i]);
+
+
+        }
+    }
+
+    /// <summary>
+    /// 構造体パース
+    /// </summary>
+    private void ParseStructural( string[] lines )
+    {
         for (int i = 0; i < lines.Length; ++i) {
             // クラスパース処理
             if (lines [i].IndexOf("class") >= 0 ) {
@@ -62,13 +78,8 @@ public class PlantUMLConverter {
                 var info = new InterfaceInfo ();
                 i = info.Parse (lines, i);
                 structuralInfoList.Add (info);
-
-                Debug.LogWarning (info.GetDeclarationName ());
                 continue;
             }
         }
-
-        string arrow = arrowPattern.Replace ("{dir}", dirPattern);
-        Regex regex = new Regex (arrow);
     }
 }

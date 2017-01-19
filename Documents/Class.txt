@@ -1,0 +1,100 @@
+@startuml
+title アセットバンドル管理
+
+'アセットバンドル管理'
+class AssetBundleManager {
+  -AssetBundleLoadOperator loadOperator
+  -IAssetBundleManifest manifest
+  +void LoadAssetBundle(string asset_bundle_name, Action<AssetBundle> on_success, Action<?> on_error)
+  +void LoadAssetBundle(string[] asset_bundle_names, Action<AssetBundle[]> on_success, Action<?> on_error)
+  +void UnloadAssetBundle(Assetbundle asset_bundle)
+  +void UnloadAssetBundle(Assetbundle[] asset_bundles)
+  +void LoadAssetAsync<T>(AssetBundle asset_bundle, string asset_name, Action<T> on_complete)
+}
+
+interface IAssetBundleManifest {
+  void SetManifest<T>(T manifest)
+  List<string> GetDependenciesNames(string asset_bundle_name)
+  Hash128 GetAssetBundleHash(string asset_bundle_name)
+}
+
+class UnityManifest {
+  -AssetBundleManifest manifest
+}
+
+class AssetLoader {
+  +void LoadAsync<T>(AssetBundle asset_bundle, string asset_name, Action<T> on_complete)
+}
+
+class AssetBundleLoadOperator {
+  -List<LoadedAssetBundle> loadedList
+  -List<AssetBundleLoder> loaderList
+  +int loaderLimit
+  +void Load(string url, Action<AssetBundle> on_success, Action<Exception> on_error)
+  +void Unload(AssetBundle asset_bundle)
+}
+
+class LoadedAssetBundle {
+  +AssetBundle assetBundle
+  +int referenceCount
+  +string url
+}
+
+abstract class AssetBundleLoader {
+  +string loadingUrl
+  +sealed void Load(string url, Action<AssetBundle> on_success, Action<Exception> on_error)
+  #abstract void Run(string url, Action<AssetBundle> on_success, Action<Exception> on_error)
+}
+
+class WWWException {
+  +WWW www
+}
+
+note as AssetBundleManagerNote
+AssetBundleの依存関係を解決する
+end note
+
+note as IAssetBundleManifestNote
+AssetBundle関連の情報を取り出す
+AssetBundleManifestでないもので情報を管理するときのため
+end note
+
+note as AssetBundleLoadOperatorNote
+・AssetBundleの同時読み込み数を制限する
+・AssetBundleの参照管理を行う
+end note
+
+note as AssetBundleLoaderNote
+Loadメソッドで下記を行う
+loadingUrl = url;
+end note
+
+note as WWWExceptionNote
+WWWのエラーはこれに集約
+end note
+
+AssetBundleManager -right-> IAssetBundleManifest
+AssetBundleManager -down-> AssetBundleLoadOperator
+AssetBundleManager -left-> AssetLoader
+
+
+IAssetBundleManifest <|-- UnityManifest
+
+AssetBundleLoadOperator --> AssetBundleLoader
+AssetBundleLoadOperator --> LoadedAssetBundle
+AssetBundleLoader <|-- WWWLoader
+AssetBundleLoader <|-- WWWCacheOrDownloadLoader
+AssetBundleLoader <|-- LocalAssetBundleLoader
+
+WWWLoader --> WWWException
+WWWCacheOrDownloadLoader --> WWWException
+
+WWWException --|> Exception
+
+'Note'
+AssetBundleManagerNote .. AssetBundleManager
+IAssetBundleManifestNote .. IAssetBundleManifest
+AssetBundleLoadOperatorNote . AssetBundleLoadOperator
+AssetBundleLoaderNote . AssetBundleLoader
+WWWExceptionNote . WWWException
+@enduml

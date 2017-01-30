@@ -1,0 +1,21 @@
+interface IParseable {
+  StructuralInfoBase[] Parse(string[] lines,ref int index)
+}
+
+class PatternTable {
+}
+
+abstract class StructuralInfoBase {
+}
+
+Converter -down-> IParseable
+
+IParseable -> StructuralInfoBase
+
+StructuralInfoBase <|-down- ClassInfo
+StructuralInfoBase <|-down- InterfaceInfo
+
+IParseable <|-down- ClassParser
+IParseable <|-down- InterfaceParser
+IParseable <|-down- ArrowParser
+ArrowParser -down-> PatternTable

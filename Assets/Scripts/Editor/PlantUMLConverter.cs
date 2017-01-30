@@ -13,7 +13,14 @@ public class PlantUMLConverter {
     /// <summary>
     /// 継承矢印パターン
     /// </summary>
-    private const string arrowPattern = @"(?:-{1,}{dir}\|>|<\|{dir}-{1,})";
+    private const string arrowLeftPattern = @"(?:<\|{dir}-{1,})";
+
+    /// <summary>
+    /// 継承矢印パターン
+    /// </summary>
+    private const string arrowRightPattern = @"(?:-{1,}{dir}\|>)";
+
+    private const string arrowPattern = @"(?:<\|{dir}-{1,}|-{1,}{dir}\|>|<-{dir}-{1,}|-{1,}{dir}->)";
 
     /// <summary>
     /// 方向パターン
@@ -44,8 +51,16 @@ public class PlantUMLConverter {
         // 構造体パース
         ParseStructural (lines);
 
+        // 矢印パース
+        ParseArrow (lines);
+
+        foreach (var structural in structuralInfoList.OrderBy(x=>x.GetName()) ) {
+            //Debug.LogWarning (structural.GetName ());
+        }
+
+        /*
         // 継承矢印パターン
-        string arrow = arrowPattern.Replace ("{dir}", dirPattern);
+        string arrow = arrowLeftPattern.Replace ("{dir}", dirPattern);
         Regex regex = new Regex (arrow);
 
         for (int i = 0; i < lines.Length; ++i) {
@@ -55,8 +70,32 @@ public class PlantUMLConverter {
 
             var structurals = regex.Split (lines [i]);
 
+            var base_structural = structuralInfoList.FirstOrDefault (x => x.GetName () == structurals[0]);
+
+            var target_structural = structuralInfoList.FirstOrDefault (x => x.GetName () == structurals [1]);
+
+            if (target_structural == null) {
+                target_structural = new ClassInfo ();
+                target_structural.SetName (structurals [1]);
+                structuralInfoList.Add (target_structural);
+            }
+
+            if (base_structural == null) {
+                base_structural = new ClassInfo ();
+                base_structural.SetName (structurals [0]);
+                structuralInfoList.Add (base_structural);
+                continue;
+            }
+
+            var members = base_structural.GetInheritanceMemberNames ();
+            if (members.Count == 0) {
+                continue;
+            }
+
+            // 矢印も先に全てパース
 
         }
+        */
     }
 
     /// <summary>
@@ -81,5 +120,41 @@ public class PlantUMLConverter {
                 continue;
             }
         }
+    }
+
+    /// <summary>
+    /// 矢印パース
+    /// </summary>
+    private void ParseArrow(string[] lines )
+    {
+        // 矢印パターン読み込み
+        Regex regex = new Regex (arrowPattern.Replace("{dir}",dirPattern));
+
+        foreach (var line in lines) {
+            // 矢印チェック
+            if (!regex.IsMatch (line)) {
+                continue;
+            }
+
+            // クラス名取り出し
+            var struct_names = regex.Split (line);
+            foreach (var struct_name in struct_names) {
+                var replace_name = struct_name.Trim ();
+
+                // すでに登録されているか
+                if (structuralInfoList.Any (x => x.GetName() == replace_name)) {
+                    continue;
+                }
+                var info = new ClassInfo ();
+                info.SetName (replace_name);
+
+                Debug.Log (replace_name + ":" + info.GetName ());
+
+                // クラス名登録
+                structuralInfoList.Add (info);
+            }
+        }
+
+
     }
 }

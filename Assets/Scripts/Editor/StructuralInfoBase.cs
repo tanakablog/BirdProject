@@ -10,24 +10,17 @@ public abstract class StructuralInfoBase {
     /// <summary>
     /// 構造名
     /// </summary>
-    protected string strcturalName;
+    public string strcturalName;
+
+    /// <summary>
+    /// ネームスペース名
+    /// </summary>
+    public string namespaceName;
 
     /// <summary>
     /// メンバーリスト
     /// </summary>
     public List<MenberInfo> menberList;
-
-    /// <summary>
-    /// パース
-    /// </summary>
-    /// <param name="lines">文字列配列.</param>
-    /// <param name="index">パース開始インデックス</param>
-    public abstract int Parse (string[] lines, int index);
-
-    /// <summary>
-    /// 構造体名設定
-    /// </summary>
-    public abstract void SetName (string structural);
 
     /// <summary>
     /// 構造体名取得

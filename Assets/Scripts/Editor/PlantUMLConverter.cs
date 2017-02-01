@@ -32,6 +32,14 @@ public class PlantUMLConverter {
     /// </summary>
     private List<StructuralInfoBase> structuralInfoList = new List<StructuralInfoBase>();
 
+    /// <summary>
+    /// パーサー配列
+    /// </summary>
+    private ParserBase[] parsers = new ParserBase[] {
+        new ClassParser(),
+        new InterfaceParser()
+    };
+
     [MenuItem("Test/Convert")]
     public static void Convert () {
         PlantUMLConverter converter = new PlantUMLConverter ();
@@ -48,14 +56,20 @@ public class PlantUMLConverter {
         // １行毎に分割
         var lines = text.Replace ("\r\n", "\n").Split ('\n');
 
-        // 構造体パース
-        ParseStructural (lines);
+        // パース処理
+        for (int i = 0; i < lines.Length; ++i) {
+            foreach (var parser in parsers) {
+                var infos = parser.Parse (lines, ref i);
+                if (infos == null) {
+                    continue;
+                }
 
-        // 矢印パース
-        ParseArrow (lines);
+                structuralInfoList.AddRange (infos);
+            }
+        }
 
         foreach (var structural in structuralInfoList.OrderBy(x=>x.GetName()) ) {
-            //Debug.LogWarning (structural.GetName ());
+            Debug.LogWarning (structural.GetName ());
         }
 
         /*
@@ -99,30 +113,6 @@ public class PlantUMLConverter {
     }
 
     /// <summary>
-    /// 構造体パース
-    /// </summary>
-    private void ParseStructural( string[] lines )
-    {
-        for (int i = 0; i < lines.Length; ++i) {
-            // クラスパース処理
-            if (lines [i].IndexOf("class") >= 0 ) {
-                var info = new ClassInfo ();
-                i = info.Parse (lines, i);
-                structuralInfoList.Add (info);
-                continue;
-            }
-
-            // インターフェースパース処理
-            if (lines [i].IndexOf("interface") >= 0 ) {
-                var info = new InterfaceInfo ();
-                i = info.Parse (lines, i);
-                structuralInfoList.Add (info);
-                continue;
-            }
-        }
-    }
-
-    /// <summary>
     /// 矢印パース
     /// </summary>
     private void ParseArrow(string[] lines )
@@ -146,7 +136,6 @@ public class PlantUMLConverter {
                     continue;
                 }
                 var info = new ClassInfo ();
-                info.SetName (replace_name);
 
                 Debug.Log (replace_name + ":" + info.GetName ());
 

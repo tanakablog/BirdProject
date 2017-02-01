@@ -7,15 +7,6 @@ using System.Text;
 /// クラス情報
 /// </summary>
 public class ClassInfo : StructuralInfoBase {
-
-    /// <summary>
-    /// アクセス修飾子テーブル
-    /// </summary>
-    private static readonly Dictionary<string,string> kACCESS_MODIFIERS_TABLE = new Dictionary<string, string>() {
-        {"+", "public "},  
-        {"-", "private " },
-        {"#", "protected " }
-    };
     
     /// <summary>
     /// 継承名リスト
@@ -25,43 +16,7 @@ public class ClassInfo : StructuralInfoBase {
     /// <summary>
     /// 抽象クラスフラグ
     /// </summary>
-    private bool isAbstract = false;
-
-    public override int Parse (string[] lines, int index)
-    {
-        // 名前パース
-        SetName (lines [index]);
-
-        // 内容までインデックスをずらす
-        index++;
-        if (lines [index].IndexOf ("{") >= 0) {
-            index++;
-        }
-
-        // 定義終了まで内容をパース
-        menberList = new List<MenberInfo> ();
-        while (lines [index].IndexOf ("}") < 0) {
-            var menber = new MenberInfo ();
-
-            menber.name = ReplaceAccessModifiers (lines [index]).TrimStart ();
-            menber.isAbstract = lines [index].IndexOf ("abstract ") >= 0;
-
-            menberList.Add (menber);
-
-            index++;
-        }
-
-        return index++;
-    }
-
-    public override void SetName (string structural)
-    {
-        // 抽象クラスチェック
-        isAbstract = structural.IndexOf ("abstract") >= 0;
-
-        // 構造名保存
-        strcturalName = structural.Replace ("class", string.Empty).Replace ("{", string.Empty).Replace ("abstract", string.Empty).Trim ();
-    }
+    public bool isAbstract = false;
 
     public override string GetDeclarationName ()
     {
@@ -90,21 +45,5 @@ public class ClassInfo : StructuralInfoBase {
         } 
 
         return declaration;
-    }
-
-    /// <summary>
-    /// アクセス修飾子置き換え
-    /// </summary>
-    /// <returns>置き換え後文字列</returns>
-    /// <param name="line">文字列</param>
-    private string ReplaceAccessModifiers( string line )
-    {
-        foreach (var replace in kACCESS_MODIFIERS_TABLE) {
-            if (line.IndexOf (replace.Key) >= 0) {
-                return line.Replace (replace.Key, replace.Value);
-            }
-        }
-
-        return line;
     }
 }

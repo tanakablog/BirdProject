@@ -1,21 +1,17 @@
-interface IParseable {
+abstract class ParserBase {
   StructuralInfoBase[] Parse(string[] lines,ref int index)
-}
-
-class PatternTable {
 }
 
 abstract class StructuralInfoBase {
 }
 
-Converter -down-> IParseable
+Converter -down-> ParserBase
 
-IParseable -> StructuralInfoBase
+ParserBase -> StructuralInfoBase
 
 StructuralInfoBase <|-down- ClassInfo
 StructuralInfoBase <|-down- InterfaceInfo
 
-IParseable <|-down- ClassParser
-IParseable <|-down- InterfaceParser
-IParseable <|-down- ArrowParser
-ArrowParser -down-> PatternTable
+ParserBase <|-down- ClassParser
+ParserBase <|-down- InterfaceParser
+ParserBase <|-down- ArrowParser

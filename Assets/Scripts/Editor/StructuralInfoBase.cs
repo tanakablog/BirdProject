@@ -23,6 +23,11 @@ public abstract class StructuralInfoBase {
     public List<MenberInfo> menberList;
 
     /// <summary>
+    /// 継承リスト
+    /// </summary>
+    public List<StructuralInfoBase> inheritanceList;
+
+    /// <summary>
     /// 構造体名取得
     /// </summary>
     /// <returns>The name.</returns>
@@ -39,12 +44,18 @@ public abstract class StructuralInfoBase {
     /// <summary>
     /// 継承メンバー名取得
     /// </summary>
-    public virtual string[] GetInheritanceMemberNames() {
+    public virtual string[] GetInheritanceMemberNames()
+    {
         if (menberList == null) {
-            return new string[0];
+            return null;
         }
 
         return menberList.Where (member => member.isAbstract).Select (menber => menber.name).ToArray ();
+    }
+
+    public virtual void AddInhritanceInfo(StructuralInfoBase info)
+    {
+        inheritanceList.Add(info);
     }
 }
 

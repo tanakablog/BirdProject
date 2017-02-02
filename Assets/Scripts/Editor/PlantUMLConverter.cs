@@ -75,45 +75,35 @@ public class PlantUMLConverter {
         foreach (var structural in structuralInfoList.OrderBy(x=>x.GetName()) ) {
             Debug.LogWarning (structural.GetName ());
         }
-
-        /*
+        
         // 継承矢印パターン
-        string arrow = arrowLeftPattern.Replace ("{dir}", dirPattern);
-        Regex regex = new Regex (arrow);
+        var left_regex = new Regex(arrowLeftPattern.Replace("{dir}", dirPattern));
+        var right_regex = new Regex(arrowRightPattern.Replace("{dir}", dirPattern));
 
         for (int i = 0; i < lines.Length; ++i) {
-            if (!regex.IsMatch (lines [i])) {
-                continue;
+            if (left_regex.IsMatch (lines [i]))
+            {
+                var structurals = left_regex.Split(lines[i]);
+
+                var base_structural = structuralInfoList.FirstOrDefault(x => x.GetName() == structurals[0]);
+
+                var target_structural = structuralInfoList.FirstOrDefault(x => x.GetName() == structurals[1]);
+
+                target_structural.AddInhritanceInfo(base_structural);
             }
+            else if(right_regex.IsMatch(lines[i]))
+            {
+                var structurals = left_regex.Split(lines[i]);
 
-            var structurals = regex.Split (lines [i]);
+                var base_structural = structuralInfoList.FirstOrDefault(x => x.GetName() == structurals[1]);
 
-            var base_structural = structuralInfoList.FirstOrDefault (x => x.GetName () == structurals[0]);
+                var target_structural = structuralInfoList.FirstOrDefault(x => x.GetName() == structurals[0]);
 
-            var target_structural = structuralInfoList.FirstOrDefault (x => x.GetName () == structurals [1]);
-
-            if (target_structural == null) {
-                target_structural = new ClassInfo ();
-                target_structural.SetName (structurals [1]);
-                structuralInfoList.Add (target_structural);
+                target_structural.AddInhritanceInfo(base_structural);
             }
-
-            if (base_structural == null) {
-                base_structural = new ClassInfo ();
-                base_structural.SetName (structurals [0]);
-                structuralInfoList.Add (base_structural);
-                continue;
-            }
-
-            var members = base_structural.GetInheritanceMemberNames ();
-            if (members.Count == 0) {
-                continue;
-            }
-
-            // 矢印も先に全てパース
-
         }
-        */
+
+
     }
 
     /// <summary>

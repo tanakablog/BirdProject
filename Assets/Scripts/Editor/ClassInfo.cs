@@ -24,9 +24,9 @@ public class ClassInfo : StructuralInfoBase {
 
         // 抽象クラスチェック
         if (isAbstract) {
-            declaration = string.Format ("public abstract class {0}", strcturalName);
+            declaration = string.Format ("public abstract class {0}", structuralName);
         } else {
-            declaration = string.Format ("public class {0}", strcturalName);
+            declaration = string.Format ("public class {0}", structuralName);
         }
 
         // 継承チェック

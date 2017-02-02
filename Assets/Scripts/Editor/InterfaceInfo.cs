@@ -42,6 +42,6 @@ public class InterfaceInfo : StructuralInfoBase {
 
     public override string GetDeclarationName ()
     {
-        return string.Format ("public interface {0}", strcturalName);
+        return string.Format ("public interface {0}", structuralName);
     }
 }

@@ -14,7 +14,7 @@ public class ClassParser : ParserBase {
         var info = new ClassInfo ();
 
         // クラス名設定
-        info.strcturalName = lines [index].Replace ("class", string.Empty).Replace ("{", string.Empty).Replace ("abstract", string.Empty).Trim ();
+        info.structuralName = lines [index].Replace ("class", string.Empty).Replace ("{", string.Empty).Replace ("abstract", string.Empty).Trim ();
 
         // 抽象クラスフラグ設定
         info.isAbstract = CheckWord (SplitSpace (lines [index]), "abstract");

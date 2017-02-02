@@ -68,6 +68,10 @@ public class PlantUMLConverter {
             }
         }
 
+        // 矢印パース
+        ParseArrow (lines);
+
+        // TODO : デバッグ機能消す
         foreach (var structural in structuralInfoList.OrderBy(x=>x.GetName()) ) {
             Debug.LogWarning (structural.GetName ());
         }
@@ -135,15 +139,14 @@ public class PlantUMLConverter {
                 if (structuralInfoList.Any (x => x.GetName() == replace_name)) {
                     continue;
                 }
-                var info = new ClassInfo ();
 
-                Debug.Log (replace_name + ":" + info.GetName ());
+                // 新構造名はクラスとする
+                var info = new ClassInfo ();
+                info.structuralName = replace_name;
 
                 // クラス名登録
                 structuralInfoList.Add (info);
             }
         }
-
-
     }
 }

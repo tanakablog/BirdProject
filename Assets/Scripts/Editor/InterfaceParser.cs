@@ -14,7 +14,7 @@ public class InterfaceParser : ParserBase {
         var info = new InterfaceInfo ();
 
         // インターフェース名設定
-        info.strcturalName = lines [index].Replace ("interface", string.Empty).Replace ("{", string.Empty).Trim ();
+        info.structuralName = lines [index].Replace ("interface", string.Empty).Replace ("{", string.Empty).Trim ();
 
         // 内容までインデックスをずらす
         index++;

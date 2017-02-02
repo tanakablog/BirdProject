@@ -10,7 +10,7 @@ public abstract class StructuralInfoBase {
     /// <summary>
     /// 構造名
     /// </summary>
-    public string strcturalName;
+    public string structuralName;
 
     /// <summary>
     /// ネームスペース名
@@ -28,7 +28,7 @@ public abstract class StructuralInfoBase {
     /// <returns>The name.</returns>
     public virtual string GetName()
     {
-        return strcturalName;
+        return structuralName;
     }
 
     /// <summary>

@@ -20,12 +20,12 @@ public abstract class StructuralInfoBase {
     /// <summary>
     /// メンバーリスト
     /// </summary>
-    public List<MenberInfo> menberList;
+    public List<MenberInfo> menberList = new List<MenberInfo>();
 
     /// <summary>
     /// 継承リスト
     /// </summary>
-    public List<StructuralInfoBase> inheritanceList;
+    public List<StructuralInfoBase> inheritanceList = new List<StructuralInfoBase>();
 
     /// <summary>
     /// 構造体名取得

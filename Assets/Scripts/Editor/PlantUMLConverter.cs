@@ -81,29 +81,52 @@ public class PlantUMLConverter {
         var right_regex = new Regex(arrowRightPattern.Replace("{dir}", dirPattern));
 
         for (int i = 0; i < lines.Length; ++i) {
-            if (left_regex.IsMatch (lines [i]))
-            {
-                var structurals = left_regex.Split(lines[i]);
+            if (left_regex.IsMatch (lines [i])) {
+                var structurals = left_regex.Split (lines [i]).Select (x => x.Trim ()).ToArray ();
 
-                var base_structural = structuralInfoList.FirstOrDefault(x => x.GetName() == structurals[0]);
+                var base_structural = structuralInfoList.FirstOrDefault (x => x.GetName () == structurals [0]);
 
-                var target_structural = structuralInfoList.FirstOrDefault(x => x.GetName() == structurals[1]);
+                var target_structural = structuralInfoList.FirstOrDefault (x => x.GetName () == structurals [1]);
 
-                target_structural.AddInhritanceInfo(base_structural);
-            }
-            else if(right_regex.IsMatch(lines[i]))
-            {
-                var structurals = left_regex.Split(lines[i]);
+                Debug.Log (structurals [1]);
+                foreach (var info in structuralInfoList) {
+                    Debug.LogWarning (info.GetName ());
+                }
 
-                var base_structural = structuralInfoList.FirstOrDefault(x => x.GetName() == structurals[1]);
+                target_structural.AddInhritanceInfo (base_structural);
+            } else if (right_regex.IsMatch (lines [i])) {
+                var structurals = right_regex.Split (lines [i]).Select (x => x.Trim ()).ToArray ();
 
-                var target_structural = structuralInfoList.FirstOrDefault(x => x.GetName() == structurals[0]);
+                if (structurals.Length < 2) {
+                    Debug.LogError (structurals);
+                }
 
-                target_structural.AddInhritanceInfo(base_structural);
+
+                var base_structural = structuralInfoList.FirstOrDefault (x => x.GetName () == structurals [1]);
+
+                var target_structural = structuralInfoList.FirstOrDefault (x => x.GetName () == structurals [0]);
+
+                target_structural.AddInhritanceInfo (base_structural);
             }
         }
 
+        foreach( var info in structuralInfoList ) {
+            StringBuilder builder = new StringBuilder ();
+            string tab = string.Empty;
 
+            // 構造定義開始
+            builder.AppendLine (tab + info.GetDeclarationName ());
+            builder.AppendLine (tab + "{");
+            {
+                tab = StringBuilderSupporter.SetTab (1);
+                foreach (var member in info.menberList) {
+                    builder.AppendLine (tab + member.name);
+                }
+            }
+            builder.AppendLine ("}");
+
+            Debug.LogWarning (builder.ToString ());
+        }
     }
 
     /// <summary>

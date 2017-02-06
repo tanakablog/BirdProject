@@ -110,6 +110,7 @@ public class PlantUMLConverter {
             }
         }
 
+        var method_regex = new Regex (@"\(*\)");
         foreach( var info in structuralInfoList ) {
             StringBuilder builder = new StringBuilder ();
             string tab = string.Empty;
@@ -120,7 +121,20 @@ public class PlantUMLConverter {
             {
                 tab = StringBuilderSupporter.SetTab (1);
                 foreach (var member in info.menberList) {
-                    builder.AppendLine (tab + member.name);
+                    // メンバ宣言
+                    builder.Append (tab + member.name);
+
+                    // 関数処理
+                    if (method_regex.IsMatch (member.name)) {
+                        builder.AppendLine (" {}");
+                    } else if (member.name.IndexOf (";") < 0) {
+                        builder.AppendLine (";");
+                    } else {
+                        builder.AppendLine ();
+                    }
+
+                    // 改行
+                    builder.AppendLine ();
                 }
             }
             builder.AppendLine ("}");
